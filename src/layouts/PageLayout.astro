@@ -1,0 +1,122 @@
+---
+/**
+ * PageLayout
+ * 
+ * Standard layout for general content pages like Uses, Contact, Decisions list,
+ * Journey, and other informational pages. Extends BaseLayout with a consistent
+ * page header structure and content container.
+ * 
+ * Features:
+ * - Optimized content width (800px max)
+ * - Optional page header with title and intro text
+ * - Consistent spacing and typography
+ * - Responsive design for mobile devices
+ * - Flexible content area via slot
+ * 
+ * The page header is only rendered if pageTitle or pageIntro is provided,
+ * allowing for flexible usage across different page types.
+ * 
+ * @component
+ * 
+ * @example
+ * ```astro
+ * ---
+ * import PageLayout from '../layouts/PageLayout.astro';
+ * ---
+ * 
+ * <!-- With page header -->
+ * <PageLayout 
+ *   title="Uses" 
+ *   description="Tools and software I use daily"
+ *   pageTitle="What I Use"
+ *   pageIntro="A comprehensive list of the tools, software, and hardware I use for development and productivity."
+ * >
+ *   <div>Page content goes here</div>
+ * </PageLayout>
+ * 
+ * <!-- Without page header (custom header in slot) -->
+ * <PageLayout title="Custom Page">
+ *   <h1>Custom Header</h1>
+ *   <p>Custom content...</p>
+ * </PageLayout>
+ * ```
+ */
+
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  /** Page title for browser tab and SEO */
+  title: string;
+  
+  /** Optional page description for meta tag */
+  description?: string;
+  
+  /** Optional page heading displayed in the header */
+  pageTitle?: string;
+  
+  /** Optional introductory text displayed below the page title */
+  pageIntro?: string;
+}
+
+const { title, description, pageTitle, pageIntro } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="page-layout">
+    {(pageTitle || pageIntro) && (
+      <header class="page-header">
+        {pageTitle && <h1>{pageTitle}</h1>}
+        {pageIntro && <p class="page-intro">{pageIntro}</p>}
+      </header>
+    )}
+    
+    <div class="page-content">
+      <slot />
+    </div>
+  </div>
+
+  <style>
+    .page-layout {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: var(--space-2xl) var(--space-lg);
+    }
+
+    .page-header {
+      margin-bottom: var(--space-3xl);
+    }
+
+    .page-header h1 {
+      font-size: var(--font-size-5xl);
+      margin-bottom: var(--space-md);
+      font-weight: var(--font-weight-bold);
+      letter-spacing: -0.02em;
+      line-height: var(--line-height-tight);
+    }
+
+    .page-intro {
+      font-size: var(--font-size-xl);
+      line-height: var(--line-height-relaxed);
+      color: var(--color-text-secondary);
+      max-width: var(--max-width-prose);
+    }
+
+    .page-content {
+      /* Content from slot will inherit typography styles */
+    }
+
+    @media (max-width: 768px) {
+      .page-layout {
+        padding: var(--space-xl) var(--space-md);
+      }
+
+      .page-header h1 {
+        font-size: var(--font-size-4xl);
+      }
+
+      .page-intro {
+        font-size: var(--font-size-lg);
+      }
+    }
+  </style>
+</BaseLayout>
